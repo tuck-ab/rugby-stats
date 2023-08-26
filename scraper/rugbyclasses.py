@@ -23,6 +23,7 @@ class Game:
     away_team: str
     home_score: int
     away_score: int
+    date: str
     home_starters: [PlayerSelection]
     away_starters: [PlayerSelection]
     home_subs: [PlayerSelection]

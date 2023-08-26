@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 from rugbyclasses import PlayerSelection, Game, Event
 
-def get_match_data(link):
+def get_match_data(link) -> Game:
     page = requests.get(link)
     soup = BeautifulSoup(page.content, "html.parser")
 
@@ -14,6 +14,10 @@ def get_match_data(link):
     home_team = box.find("div", {"class": "titleIntLeft"}).text
     away_team = box.find("div", {"class": "titleIntRight"}).text
     home_score, away_score = box.find("div", {"class": "titleIntCenter"}).text.split("-")
+
+    ## Getting the date
+    row = report.find("div", {"id": "matchStats"})
+    date = "-".join(row.find("div", {"class": "matchStatsInt"}).text.split(" "))
 
     ## Getting the squads
     team_lists = report.find_all("ul", {"class": "matchSquads"})
@@ -30,6 +34,12 @@ def get_match_data(link):
 
     home_events = parse_event_list(event_lists[0])
     away_events = parse_event_list(event_lists[1])
+    events = home_events + away_events
+
+    game = Game(home_team, away_team, home_score, away_score, date, home_starts,
+                away_starts, home_subs, away_subs, events)
+    
+    return game
 
 
 def parse_squad_list(ul, numbers, team):
