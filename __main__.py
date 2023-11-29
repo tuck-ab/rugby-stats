@@ -1,19 +1,21 @@
 from .scraper.matchscraper import get_match_data
+from .scraper.wcscraper import get_wc_game_links
 from .database.tools import add_game, get_connection
-from .database.debug import print_database
+from .database.debug import print_database, print_table
 from .database.database_setup import reset_database
 
+def run_wc(comp_id):
+    links = get_wc_game_links(comp_id)
+
+    for link in links:
+        game = get_match_data(link)
+
+        if game:
+            conn = get_connection()
+            add_game(conn, game)
+            conn.close()
+
 if __name__ == "__main__":
-    ## Parse the game using the scraper
-    game = get_match_data("https://rugby.statbunker.com/competitions/MatchDetails/World-Cup-2019/England-VS-South-Africa?comp_id=606&match_id=40373&date=02-Nov-2019")
-
-    reset_database()
-
-    ## Add the game information to the DB
     conn = get_connection()
-    add_game(conn, game)
-
-    print_database(conn)
-
-    conn.close()
+    print_table(conn, "Games")
     

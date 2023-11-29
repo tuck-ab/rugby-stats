@@ -18,7 +18,7 @@ class PlayerSelection:
 class Event:
     type: str
     outcome: Optional[str]
-    player: PlayerSelection
+    player: Optional[PlayerSelection]
     time: str
     
 @dataclass

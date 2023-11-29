@@ -61,7 +61,10 @@ def add_game(conn: Connection, game: Game):
     for event in game.events:
         new_event_id = cur.execute("SELECT MAX(EventID) FROM Events").fetchall()[0][0] + 1
         time = int(event.time.split(" ")[0])
-        player_id = player_ids[event.player.name]
+        if event.player:
+            player_id = player_ids[event.player.name]
+        else:
+            player_id = 0
         cur.execute("INSERT INTO Events VALUES (?, ?, ?, ?, ?, ?)",
                     (new_event_id, new_game_id, player_id, event.type, event.outcome, time))
         conn.commit()

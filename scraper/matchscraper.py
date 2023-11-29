@@ -1,16 +1,15 @@
+from typing import Optional
+
 import requests
 from bs4 import BeautifulSoup
 
 from .rugbyclasses import PlayerSelection, Game, Event
 from .static import get_file
 
-def get_match_data(link) -> Game:
-    # page = requests.get(link)
-    # soup = BeautifulSoup(page.content, "html.parser")
-    # page.close()
-
-    data = get_file("html.html")
-    soup = BeautifulSoup(data, "html.parser")
+def get_match_data(link) -> Optional[Game]:
+    page = requests.get(link)
+    soup = BeautifulSoup(page.content, "html.parser")
+    page.close()
 
     report = soup.find("div", {"id": "matchReportCon"})
 
@@ -39,6 +38,11 @@ def get_match_data(link) -> Game:
     ## Getting the scoring events
     event_lists = report.find_all("ul", {"class", "matchReportInt"})[1:3]
 
+    ## If the data doesn't exist eg.
+    ## https://rugby.statbunker.com/competitions/MatchDetails/World-Cup-2019/Namibia-VS-Canada?comp_id=606&match_id=39756&date=13-Oct-2019
+    if len(event_lists) == 0:
+        return None
+
     home_events = parse_event_list(event_lists[0], players)
     away_events = parse_event_list(event_lists[1], players)
     events = home_events + away_events
@@ -54,24 +58,31 @@ def parse_squad_list(ul, numbers, team):
             for li, number in zip(ul.find_all("li"), numbers)]
 
 
-def find_player(name: str, players: list[PlayerSelection]) -> PlayerSelection:
+def find_player(name: str, players: list[PlayerSelection], event_type) -> PlayerSelection:
     for player in players:
         if player.name == name:
             return player
-        
-    raise Exception("Player with given name not found in given list")
+    
+    print(f"|{event_type}|")
+    str_list = "\n".join(map(lambda x: x.name, players))
+    raise Exception(f"Player {name} with given name not found in given list \n{str_list}")
+
 
 def parse_event_list(ul, players: list[PlayerSelection]):
     events = []
 
     for div in ul.find_all("div", {"class": "matchReportSubInt"}):
-        name = div.p.text.split(" (")[0]
-        player = find_player(name, players)
-        time = div.p.text.split(" (")[1][:-1]
-
         parsed_type = div.small.text.split(", ")
-        event_type = parsed_type[0]
+        event_type = parsed_type[0].strip()
         outcome = parsed_type[1] if len(parsed_type) > 1 else None
+
+        if event_type != "pen try":
+            name = div.p.text.split(" (")[0]
+            player = find_player(name, players, event_type)
+            time = div.p.text.split(" (")[1][:-1]
+        else:
+            player = None
+            time = div.p.text.strip()[1:-1]
 
         events.append(Event(event_type, outcome, player, time))
 
