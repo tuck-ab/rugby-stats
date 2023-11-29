@@ -17,7 +17,7 @@ def get_wc_game_links(comp_id):
     soup = BeautifulSoup(page.content, "html.parser")
 
     ## The links are in a table with class "breadcrumb"
-    section_ids = [li.a.get("href")[-3:] for li in soup.find("ul", {"class", "breadcrumb"}).find_all("li")]
+    section_ids = [li.a.get("href").split("=")[-1] for li in soup.find("ul", {"class", "breadcrumb"}).find_all("li")]
 
     game_links = get_pool_game_links(comp_id, section_ids[0])
     game_links += get_non_pool_game_links(comp_id, section_ids[1:])
