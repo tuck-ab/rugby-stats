@@ -16,6 +16,7 @@ Games (
     <u>GameID</u>,
     <span style="text-decoration:overline">HomeTeamID</span>,
     <span style="text-decoration:overline">AwayTeamID</span>,
+    Date,
     HomeScore,
     AwayScore
 )
@@ -27,7 +28,7 @@ PlayerSelections (
     Position
 )
 
-Event(
+Events(
     <u>EventID</u>,
     <span style="text-decoration:overline">GameID</span>,
     <span style="text-decoration:overline">PlayerID</span>,

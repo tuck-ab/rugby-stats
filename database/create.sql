@@ -1,19 +1,24 @@
-create TABLE Players (
+CREATE TABLE Players (
     PlayerID INT NOT NULL,
     Name TEXT NOT NULL,
     PRIMARY KEY (PlayerID)
 );
 
-create TABLE Teams (
+INSERT INTO Players VALUES (0, 'Null Player');
+
+CREATE TABLE Teams (
     TeamID INT NOT NULL,
     Name TEXT NOT NULL,
     PRIMARY KEY (TeamID)
 );
 
-create TABLE Games (
+INSERT INTO Teams VALUES (0, 'Null Team');
+
+CREATE TABLE Games (
     GameID INT NOT NULL,
     HomeTeamID INT NOT NULL,
     AwayTeamID INT NOT NULL,
+    Date TEXT NOT NULL,
     HomeScore INT NOT NULL,
     AwayScore INT NOT NULL,
     PRIMARY KEY (GameID),
@@ -21,7 +26,9 @@ create TABLE Games (
     FOREIGN KEY (AwayTeamID) REFERENCES Teams(TeamID)
 );
 
-create TABLE PlayerSelections (
+INSERT INTO Games VALUES (0, 0, 0, "20-Nov-2000", 0, 0);
+
+CREATE TABLE PlayerSelections (
     PlayerID INT NOT NULL,
     TeamID INT NOT NULL,
     GameID INT NOT NULL,
@@ -32,7 +39,9 @@ create TABLE PlayerSelections (
     FOREIGN KEY (GameID) REFERENCES Games(GameID)
 );
 
-create TABLE Event (
+INSERT INTO PlayerSelections VALUES (0, 0, 0, 15);
+
+CREATE TABLE Events (
     EventID INT NOT NULL,
     GameID INT NOT NULL,
     PlayerID INT NOT NULL,
@@ -43,3 +52,5 @@ create TABLE Event (
     FOREIGN KEY (GameID) REFERENCES Games(GameID),
     FOREIGN KEY (PlayerID) REFERENCES Players(PlayerID)
 );
+
+INSERT INTO Events VALUES (0, 0, 0, 'Null Event', NULL, 0);
